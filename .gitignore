@@ -5,6 +5,4 @@ app/model/
 data/
 venv/
 config.json
-experimental.py
-requirements.txt
 

@@ -1,0 +1,8 @@
+flask==3.1.0
+nltk==3.9.1
+transformers==4.48.0
+torch==2.5.1
+youtube-transcript==0.6.3
+google-api-python-client==2.159.0
+spacy==3.8.4
+pyperclip==1.9.0
