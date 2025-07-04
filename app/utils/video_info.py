@@ -1,5 +1,4 @@
-from youtube_transcript_api import YouTubeTranscriptApi
-from youtube_transcript_api import TranscriptsDisabled, NoTranscriptFound
+from youtube_transcript_api import YouTubeTranscriptApi, TranscriptsDisabled, NoTranscriptFound, VideoUnavailable
 from urllib.parse import urlparse, parse_qs
 from googleapiclient.discovery import build
 from datetime import datetime
@@ -13,31 +12,20 @@ nlp = spacy.load("en_core_web_sm")
 
 # Parse and get the video ID
 def get_video_id(url):
-    # Parse the url
-    parsed_url = urlparse(url)
-
-    # Check if the URL is a valid youtube video link
-    if parsed_url.netloc not in ('www.youtube.com', 'youtube.com', 'youtu.be'):
-        return 'Invalid URL'
-  
-    # Identifier for youtube video url
-    if "youtube.com/watch?v=" in url:
-        start_pos = url.find("youtube.com/watch?v=")
-        end_pos = url.find("&")
-        if end_pos == -1:
-            end_pos = len(url)
-        video_id = url[start_pos + len("youtube.com/watch?v="):end_pos]
-    elif "youtu.be" in url:
-        start_pos = url.find("youtu.be/")
-        end_pos = url.find("?")
-        if end_pos == -1:
-            end_pos = len(url)
-        video_id = url[start_pos + len("youtu.be/"):end_pos]
-
-    if start_pos == -1 or end_pos == -1:
-        return None
-
-    return video_id
+    """Extract video ID from YouTube URL using regex"""
+    patterns = [
+        r'(?:v=|\/)([0-9A-Za-z_-]{11}).*',
+        r'(?:embed\/)([0-9A-Za-z_-]{11})',
+        r'(?:v\/|vi\/|vi=)([0-9A-Za-z_-]{11})',
+        r'(?:youtu\.be\/)([0-9A-Za-z_-]{11})'
+    ]
+    
+    for pattern in patterns:
+        match = re.search(pattern, url)
+        if match:
+            return match.group(1)
+    
+    return 'Invalid URL'
 
 
 # Preprocess string from transcript
@@ -68,20 +56,33 @@ def clean_text(text):
 # Get transcript only from dict object
 def get_transcript(video_id):
     try:
-        transcript = YouTubeTranscriptApi.get_transcript(video_id)
-
-        # Parse the text only
-        text = ' '.join([item['text'] for item in transcript])
-        
-        # Filter out noise from the transcript
-        cleaned_text = process_transcript(text)
-
-        return cleaned_text
-    
+        # Try to get transcript
+        transcript = YouTubeTranscriptApi.get_transcript(video_id, languages=['en'])
+        print(f"TRANSCRIPT: {transcript}")
+        text = ' '.join([entry['text'] for entry in transcript])
+        return text
     except TranscriptsDisabled:
+        print("Transcripts are disabled for this video")
         return None
-    
     except NoTranscriptFound:
+        print("No transcript found, trying other languages...")
+        try:
+            # Try any available language
+            transcript_list = YouTubeTranscriptApi.list_transcripts(video_id)
+            for transcript in transcript_list:
+                try:
+                    return transcript.fetch()
+                except:
+                    continue
+            return None
+        except:
+            return None
+    except VideoUnavailable:
+        print("Video is unavailable")
+        return None
+    except Exception as e:
+        # This catches the XML parsing error
+        print(f"Error getting transcript: {e}")
         return None
     
 

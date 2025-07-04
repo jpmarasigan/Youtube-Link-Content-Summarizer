@@ -1,4 +1,5 @@
-import json
+import os
+from dotenv import load_dotenv
 
 # # Create json format of youtube link video info
 # def make_yt_info_json(response, video_id):
@@ -14,9 +15,11 @@ import json
 #     else:
 #         print(f"Checksum failed {filename}")
 
+load_dotenv()
 
 # Retrieve youtube api key
 def get_api_key():
-    with open('config.json') as f:
-        data = json.load(f)
-    return data['YOUTUBE_API_KEY']
+    api_key = os.getenv('YOUTUBE_API_KEY')
+    if not api_key:
+        raise ValueError('Youtube API key not found in environment variables')
+    return api_key

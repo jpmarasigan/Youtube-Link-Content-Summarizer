@@ -4,7 +4,7 @@ model_dir = "D:/TUP SCHOOLWORKS/3rd Year/ACTIVITIES/2ND SEM/AUTOMATA/PROJECT/You
 tokenizer = BartTokenizer.from_pretrained(model_dir)
 model = BartForConditionalGeneration.from_pretrained(model_dir)
 
-def summarize_transcript(text, max_length=150, min_length=10, do_sample=False):
+def summarize_transcript(text, max_length=250, min_length=10, do_sample=False):
     inputs = tokenizer([text], max_length=1024, return_tensors='pt', truncation=True)
     summary_ids = model.generate(
         inputs['input_ids'], 

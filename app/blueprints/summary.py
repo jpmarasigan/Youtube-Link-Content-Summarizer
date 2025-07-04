@@ -53,7 +53,7 @@ def summary_page():
                 print(f"PUBLISHED DATE: {publish_date}")
                 
                 transcript = get_transcript(video_id)
-                
+
                 if transcript:    
                     transcript_summary = summarize_transcript(transcript)
                 else:
