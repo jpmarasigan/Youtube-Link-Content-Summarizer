@@ -17,18 +17,22 @@ This project is a web application built with Flask that summarizes the content o
 * Youtube API
 
 ## Installation
-
-1. Install the required packages:
+1. Clone the repository
+    ```sh
+    git clone https://github.com/jpmarasigan/Youtube-Link-Content-Summarizer.git
+    ```
+    
+2. Install the required packages:
     ```sh
     pip install -r requirements.txt
     ```
 
-2. Download the spaCy model:
+3. Download the spaCy model:
     ```sh
     python post_install.py
     ```
 
-3. Run the application:
+4.. Run the application:
     ```sh
     python run.py
     ```
