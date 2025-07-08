@@ -29,10 +29,10 @@ This project is a web application built with Flask that summarizes the content o
 
 3. Download the spaCy model:
     ```sh
-    python post_install.py
+    python -m spacy download en_core_web_sm
     ```
 
-4.. Run the application:
+4. Run the application:
     ```sh
     python run.py
     ```
